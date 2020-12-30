@@ -1,6 +1,6 @@
 import { environment } from './../environments/environment';
 import { Injectable } from '@angular/core';
-import * as io from 'socket.io-client';
+import { io } from 'socket.io-client';
 
 @Injectable({
   providedIn: 'root'
@@ -12,8 +12,8 @@ export class SocketioService {
 
   setupSocketConnection() {
     this.socket = io(environment.SOCKET_ENDPOINT, {
-      query: {
-        token: 'cde'
+      auth: {
+        token: "abc"
       }
     });
 
