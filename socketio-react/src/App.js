@@ -1,12 +1,16 @@
 import logo from './logo.svg';
 import './App.css';
 import React, {useEffect} from 'react';
-import { subscribeToChat, initiateSocket, disconnectSocket } from './socketio.service';
+import {
+	subscribeToChat,
+	initiateSocketConnection,
+	disconnectSocket,
+} from "./socketio.service";
 
 function App() {
 
   useEffect(() => {
-    initiateSocket();
+    initiateSocketConnection();
     subscribeToChat((err, data) => {
       console.log(data);
     });

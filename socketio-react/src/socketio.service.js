@@ -1,8 +1,8 @@
 import { io } from 'socket.io-client';
 
 let socket;
-export const initiateSocket = (room) => {
-  socket = io('http://localhost:3000', {
+export const initiateSocketConnection = (room) => {
+  socket = io(process.env.REACT_APP_SOCKET_ENDPOINT, {
 		auth: {
 			token: 'cde'
 		},
