@@ -23,4 +23,10 @@ export class SocketioService {
       console.log(data);
     });
   }
+  
+  disconnect() {
+    if (this.socket) {
+      this.socket.disconnect();
+    }
+  }
 }
