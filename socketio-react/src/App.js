@@ -1,40 +1,78 @@
-import logo from './logo.svg';
 import './App.css';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {
-	subscribeToChat,
 	initiateSocketConnection,
 	disconnectSocket,
+  sendMessage,
+  subscribeToMessages,
 } from "./socketio.service";
 
+// static data only for demo purposes, in real world scenario, this would be already stored on client
+const SENDER = {
+  id: '123',
+  name: "Jane Doe"
+};
+
 function App() {
+  const CHAT_ROOM = 'myRandomChatRoomId';
+
+  const [token, setToken] = useState('');
+  const [messages, setMessages] = useState([]);
+
+  const tokenInputRef = useRef('');
+  const inputRef = useRef('');
 
   useEffect(() => {
-    initiateSocketConnection();
-    subscribeToChat((err, data) => {
-      console.log(data);
-    });
-    return () => {
-      disconnectSocket();
+    if (token) {
+      initiateSocketConnection(token);
+      subscribeToMessages((err, data) => {
+        console.log(data);
+        setMessages(prev => [...prev, data]);
+      });
+      return () => {
+        disconnectSocket();
+      }
     }
-  }, []);
+  }, [token]);
+
+  const submitToken = (e) => {
+    e.preventDefault();
+    const tokenValue = tokenInputRef.current.value;
+    setToken(tokenValue);
+  }
+
+  const submitMessage = (e) => {
+    e.preventDefault();
+    const message = inputRef.current.value;
+    sendMessage({message, roomName: CHAT_ROOM}, cb => {
+      // callback is acknowledgement from server
+      console.log(cb);
+      setMessages(prev => [...prev, {
+          message,
+          ...SENDER
+        }]
+      );
+      // clear the input after the message is sent
+      inputRef.current.value = '';
+    });
+  }
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <form onSubmit={submitToken}>
+        <input type="text" placeholder="Enter token" ref={tokenInputRef} />
+        <button type="submit">Submit</button>
+      </form>
+      {/* <button onClick={() => joinChatRoom()}>Join Room</button> */}
+      <div className="box">
+        <div className="messages">
+          {messages.map((user, index) => <div key={index}>{user.name}: {user.message}</div>)}
+        </div>
+        <form className="input-div" onSubmit={submitMessage}>
+          <input type="text" placeholder="Type in text" ref={inputRef} />
+          <button type="submit">Submit</button>
+        </form>
+      </div>
     </div>
   );
 }
