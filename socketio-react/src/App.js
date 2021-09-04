@@ -10,7 +10,7 @@ import {
 // static data only for demo purposes, in real world scenario, this would be already stored on client
 const SENDER = {
   id: '123',
-  name: "Jane Doe"
+  name: "John Doe"
 };
 
 function App() {
